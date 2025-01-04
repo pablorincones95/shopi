@@ -4,8 +4,16 @@ import { ShopingCartContext } from "../../context";
 import { FaCartShopping } from "react-icons/fa6";
 
 const Navbar = () => {
-  const context = useContext(ShopingCartContext);
+  const { count, openCheckoutSideMenu, setIsProductDetailOpen } =
+    useContext(ShopingCartContext);
+
   const activeStyle = "underline underline-offset-4";
+
+  const OpenCheckoutSideMenu = () => {
+    openCheckoutSideMenu();
+    setIsProductDetailOpen(false);
+  };
+
   return (
     <nav className="flex justify-between items-center fixed z-10 w-full py-5 px-8 text-sm font-light top-0">
       <ul className="flex items-center gap-3">
@@ -79,8 +87,10 @@ const Navbar = () => {
             Sign in
           </NavLink>
         </li>
-        <li className="flex items-center">
-          <FaCartShopping className="me-2" /> {context.count}
+        <li
+          className="flex items-center"
+          onClick={() => OpenCheckoutSideMenu()}>
+          <FaCartShopping className="me-2" /> {count}
         </li>
       </ul>
     </nav>

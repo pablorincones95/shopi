@@ -13,8 +13,20 @@ const ShopingCartProvider = ({ children }) => {
     setIsProductDetailOpen((prevState) => !prevState);
   };
 
+  // Checkout side menu - open/close
+  const [isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen] = useState(false);
+  const openCheckoutSideMenu = () => {
+    setIsCheckoutSideMenuOpen((prevState) => !prevState);
+  };
+
   // Product detail - show product
   const [showProduct, setShowProduct] = useState({});
+
+  // Shoping cart - add product to cart
+  const [cartProduct, setCartProduct] = useState([]);
+
+  // Shoping cart - order
+  const [order, setOrder] = useState([]);
 
   return (
     <ShopingCartContext.Provider
@@ -22,9 +34,17 @@ const ShopingCartProvider = ({ children }) => {
         count,
         setCount,
         isProductDetailOpen,
+        setIsProductDetailOpen,
         openProductDetail,
         showProduct,
         setShowProduct,
+        cartProduct,
+        setCartProduct,
+        isCheckoutSideMenuOpen,
+        setIsCheckoutSideMenuOpen,
+        openCheckoutSideMenu,
+        order,
+        setOrder,
       }}>
       {children}
     </ShopingCartContext.Provider>
