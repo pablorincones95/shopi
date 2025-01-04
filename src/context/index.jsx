@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 const ShopingCartContext = createContext();
@@ -28,6 +28,33 @@ const ShopingCartProvider = ({ children }) => {
   // Shoping cart - order
   const [order, setOrder] = useState([]);
 
+  // Get products
+  const [products, setProducts] = useState(null);
+
+  // Get filtered products
+  const [filteredProducts, setFilteredProducts] = useState(null);
+
+  // Get products by title
+  const [searchByTitle, setSearchByTitle] = useState(null);
+
+  useEffect(() => {
+    fetch("https://api.escuelajs.co/api/v1/products")
+      .then((res) => res.json())
+      .then((json) => setProducts(json));
+  }, []);
+
+  const filteredProductsByTitle = (products, searchByTitle) => {
+    return products?.filter((product) =>
+      product.title.toLowerCase().includes(searchByTitle.toLowerCase())
+    );
+  };
+
+  useEffect(() => {
+    if (searchByTitle) {
+      setFilteredProducts(filteredProductsByTitle(products, searchByTitle));
+    }
+  }, [products, searchByTitle]);
+
   return (
     <ShopingCartContext.Provider
       value={{
@@ -45,6 +72,11 @@ const ShopingCartProvider = ({ children }) => {
         openCheckoutSideMenu,
         order,
         setOrder,
+        products,
+        setProducts,
+        searchByTitle,
+        setSearchByTitle,
+        filteredProducts,
       }}>
       {children}
     </ShopingCartContext.Provider>
