@@ -5,23 +5,16 @@ import { ProductDetail } from "../../components/product-detail";
 import { ShopingCartContext } from "../../context";
 
 const Home = () => {
-  const { products, searchByTitle, setSearchByTitle, filteredProducts } =
-    useContext(ShopingCartContext);
+  const { setSearchByTitle, filteredProducts } = useContext(ShopingCartContext);
 
   const renderView = () => {
-    if (searchByTitle?.length > 0) {
-      if (filteredProducts?.length > 0) {
-        return filteredProducts.map((product) => (
-          <Card key={product.id} product={product} />
-        ));
-      } else {
-        // eslint-disable-next-line react/no-unescaped-entities
-        return <div>We don't have anything :( </div>;
-      }
-    } else {
-      return products?.map((product) => (
+    if (filteredProducts?.length > 0) {
+      return filteredProducts.map((product) => (
         <Card key={product.id} product={product} />
       ));
+    } else {
+      // eslint-disable-next-line react/no-unescaped-entities
+      return <div>We don't have anything :( </div>;
     }
   };
 

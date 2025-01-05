@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 const ShopingCartContext = createContext();
@@ -37,6 +37,9 @@ const ShopingCartProvider = ({ children }) => {
   // Get products by title
   const [searchByTitle, setSearchByTitle] = useState(null);
 
+  // Get products by category
+  const [searchByCategory, setSearchByCategory] = useState(null);
+
   useEffect(() => {
     fetch("https://api.escuelajs.co/api/v1/products")
       .then((res) => res.json())
@@ -49,11 +52,64 @@ const ShopingCartProvider = ({ children }) => {
     );
   };
 
+  const filteredProductsByCategory = (products, searchByCategory) => {
+    return products?.filter((product) =>
+      product.category.name
+        .toLowerCase()
+        .includes(searchByCategory.toLowerCase())
+    );
+  };
+
+  const filterBy = useCallback(
+    (searchType, products, searchByTitle, searchByCategory) => {
+      if (searchType === "BY_TITLE") {
+        return filteredProductsByTitle(products, searchByTitle);
+      }
+
+      if (searchType === "BY_CATEGORY") {
+        return filteredProductsByCategory(products, searchByCategory);
+      }
+
+      if (searchType === "BY_TITLE_AND_BY_CATEGORY") {
+        return filteredProductsByCategory(products, searchByCategory).filter(
+          (product) =>
+            product.title.toLowerCase().includes(searchByTitle.toLowerCase())
+        );
+      }
+
+      if (!searchType) {
+        return products;
+      }
+    },
+    []
+  );
+
   useEffect(() => {
-    if (searchByTitle) {
-      setFilteredProducts(filteredProductsByTitle(products, searchByTitle));
-    }
-  }, [products, searchByTitle]);
+    if (searchByTitle && searchByCategory)
+      setFilteredProducts(
+        filterBy(
+          "BY_TITLE_AND_BY_CATEGORY",
+          products,
+          searchByTitle,
+          searchByCategory
+        )
+      );
+
+    if (searchByTitle && !searchByCategory)
+      setFilteredProducts(
+        filterBy("BY_TITLE", products, searchByTitle, searchByCategory)
+      );
+
+    if (searchByCategory && !searchByTitle)
+      setFilteredProducts(
+        filterBy("BY_CATEGORY", products, searchByTitle, searchByCategory)
+      );
+
+    if (!searchByCategory && !searchByTitle)
+      setFilteredProducts(
+        filterBy(null, products, searchByTitle, searchByCategory)
+      );
+  }, [products, searchByTitle, searchByCategory, filterBy]);
 
   return (
     <ShopingCartContext.Provider
@@ -77,6 +133,8 @@ const ShopingCartProvider = ({ children }) => {
         searchByTitle,
         setSearchByTitle,
         filteredProducts,
+        searchByCategory,
+        setSearchByCategory,
       }}>
       {children}
     </ShopingCartContext.Provider>
